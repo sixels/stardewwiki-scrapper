@@ -45,6 +45,7 @@ class Weapon(Item):
         rows = info_box.find_all("tr")[2:]  # skip the weapon name and image
         weapon["details"] = strip_text(rows[0].find_next(id="infoboxdetail"))
 
+        weapon["stats"] = None
         # parse the rest of the table
         table = dict(
             parse_key_val(key, val)

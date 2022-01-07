@@ -1,4 +1,4 @@
-from typing import TypedDict
+from typing import TypedDict, List
 
 from bs4 import BeautifulSoup
 
@@ -11,9 +11,9 @@ class ItemInfo(TypedDict):
     """Item name"""
     name: str
     """Item descriptions"""
-    descriptions: list[str]
+    descriptions: List[str]
     """Item notes"""
-    notes: list[str]
+    notes: List[str]
 
 
 class Item:
@@ -23,7 +23,7 @@ class Item:
         return None if heading is None else strip_text(heading)
 
     @staticmethod
-    def page_descriptions(page: BeautifulSoup) -> list[str]:
+    def page_descriptions(page: BeautifulSoup) -> List[str]:
         desc_p = page.find(id="infoboxborder")
         if not desc_p:
             return None
@@ -38,13 +38,16 @@ class Item:
                     if len(descriptions) > 0:
                         break
                 else:
-                    descriptions += [strip_text(p)]
+                    if len((desc := strip_text(p))) > 1:
+                        descriptions += [desc]
 
         return descriptions
 
     @staticmethod
-    def page_notes(page: BeautifulSoup) -> list[str]:
+    def page_notes(page: BeautifulSoup) -> List[str]:
         notes_div = page.find(id="Notes")
+        if not notes_div:
+            return []
 
         uls = [ul.find_all("li") for ul in [notes_div.find_next("ul")] if ul]
         notes = [strip_text(note) for lis in uls for note in lis]
