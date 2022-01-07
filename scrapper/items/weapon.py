@@ -56,7 +56,7 @@ class Weapon(Item):
         return cls(info=weapon)
 
 
-def parse_key_val(key, val) -> (str, Union[str, int, list[(str, str)], None]):
+def parse_key_val(key, val) -> (str, Union[str, int, dict, None]):
     """Parse the fields from the info table with the right types"""
 
     k = strip_text(key)[:-1].lower().replace(" ", "_")
