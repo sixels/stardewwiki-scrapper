@@ -1,3 +1,5 @@
+""" Parse /Weapons wiki page recusivelly """
+
 class Weapons:
     @staticmethod
     def wiki_uri():

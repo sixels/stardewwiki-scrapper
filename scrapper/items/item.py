@@ -1,6 +1,19 @@
+from typing import TypedDict
+
 from bs4 import BeautifulSoup
 
 from scrapper.utils import strip_text
+
+
+class ItemInfo(TypedDict):
+    """A generic item information"""
+
+    """Item name"""
+    name: str
+    """Item descriptions"""
+    descriptions: list[str]
+    """Item notes"""
+    notes: list[str]
 
 
 class Item:
@@ -10,13 +23,14 @@ class Item:
         return None if heading is None else strip_text(heading)
 
     @staticmethod
-    def page_descriptions(page: BeautifulSoup) -> [str]:
+    def page_descriptions(page: BeautifulSoup) -> list[str]:
         desc_p = page.find(id="infoboxborder")
         if not desc_p:
             return None
 
         desc_p = desc_p.find_next_siblings()
 
+        # ignore the "spoiler" box
         descriptions = []
         for p in desc_p:
             if p:
@@ -29,20 +43,15 @@ class Item:
         return descriptions
 
     @staticmethod
-    def page_notes(page: BeautifulSoup) -> [str]:
+    def page_notes(page: BeautifulSoup) -> list[str]:
         notes_div = page.find(id="Notes")
 
-        notes = []
-        if notes_div is not None:
-            notes_list = notes_div.find_next("ul")
-            if notes_list is not None:
-                notes_ = notes_list.find_all("li")
-                for note in notes_:
-                    notes += [strip_text(note)]
+        uls = [ul.find_all("li") for ul in [notes_div.find_next("ul")] if ul]
+        notes = [strip_text(note) for lis in uls for note in lis]
 
         return notes
 
     @classmethod
     def from_page(cls, page: BeautifulSoup):
         """Create an item from the wiki page and return it"""
-        pass
+        raise NotImplementedError()

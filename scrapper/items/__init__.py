@@ -1,4 +1,5 @@
-from scrapper.wiki.items import item,weapon
+from scrapper.items import item, weapon
 
+# re-export all classes to the scrapper.items scope
 Item = item.Item
-# Weapon = weapon.Weapon
+Weapon = weapon.Weapon

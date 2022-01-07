@@ -1,30 +1,24 @@
-from typing import TypedDict
+from typing import TypedDict, Union
 
 from bs4 import BeautifulSoup
 
 from scrapper.utils import strip_text, normalized_stats
-from scrapper.items import Item
+from .item import Item, ItemInfo
 
 
-class WeaponInfo(TypedDict):
-    """item name"""
+class WeaponInfo(ItemInfo):
+    """A Weapon information"""
 
-    name: str
-    """item description"""
-    descriptions: [str]
-    """item notes"""
-    notes: [str]
-    """in-game description text"""
-    detail: str
-
-    """the weapon type (sword, dagger, ...)"""
+    """In-game description text"""
+    details: str
+    """Weapon type (sword, dagger, ...)"""
     type_: str
     level: str
     damage: str
     critical_strike_chance: str
-    """weapon stats (speed, defense, ...)"""
+    """Weapon stats (speed, defense, ...)"""
     stats: str or None
-    """where it can be obtained"""
+    """Where it can be obtained"""
     source: str
     purchase_price: int or None
     sell_price: int or None
@@ -38,43 +32,47 @@ class Weapon(Item):
 
     @classmethod
     def from_page(cls, page: BeautifulSoup):
-        name = Item.page_name(page)
-        descriptions = Item.page_descriptions(page)
-        notes = Item.page_notes(page)
+        weapon = WeaponInfo()
 
-        info_box = soup.find(id="infoboxtable")
-        if info_box is None:
-            print("Could not find the info box")
-            return infos
+        weapon["name"] = Item.page_name(page)
+        weapon["descriptions"] = Item.page_descriptions(page)
+        weapon["notes"] = Item.page_notes(page)
 
-        rows = info_box.find_all("tr")[2:]
+        info_box = page.find(id="infoboxtable")
+        assert info_box is not None, "Could not find any #infoboxtable on page"
 
-        detail = strip_text(rows[0].find_next(id="infoboxdetail"))
+        # get the in-game description
+        rows = info_box.find_all("tr")[2:]  # skip the weapon name and image
+        weapon["details"] = strip_text(rows[0].find_next(id="infoboxdetail"))
 
-        section = None
-        for row in rows[1:]:
-            col = row.find_next("td")
+        # parse the rest of the table
+        table = dict(
+            parse_key_val(key, val)
+            for key in (row.find_next("td") for row in rows[1:])
+            if key["id"] == "infoboxsection" and (val := key.find_next_sibling())
+        )
+        weapon.update(table)
 
-            if col["id"] == "infoboxsection":
-                col_val = col.find_next_sibling()
-                if col_val is None:
-                    section = strip_text(col)
-                    aditional[section] = {}
-                else:
-                    # the last character is a colon
-                    key = strip_text(col)[:-1]
+        return cls(info=weapon)
 
-                    value = (
-                        strip_text(col_val)
-                        if key != "Stats"
-                        else normalized_stats(col_val)
-                    )
 
-                    if section is not None:
-                        aditional[section][key] = value
-                    else:
-                        aditional[key] = value
+def parse_key_val(key, val) -> (str, Union[str, int, list[(str, str)], None]):
+    """Parse the fields from the info table with the right types"""
 
-        aditional["details"] = details
-        infos["aditional"] = aditional
-        return infos
+    k = strip_text(key)[:-1].lower().replace(" ", "_")
+    v = strip_text(val)
+    if "price" in k:
+        v = int_or_none(v[:-1])
+    elif "level" in k:
+        v = int_or_none(v)
+    elif "stats" in k:
+        v = normalized_stats(v)
+
+    return (k, v)
+
+
+def int_or_none(s: str) -> int or None:
+    try:
+        return int(s)
+    except ValueError:
+        return None
