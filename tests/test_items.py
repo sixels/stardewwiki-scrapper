@@ -1,8 +1,7 @@
-# from src.items import Items
-
 from tests.utils import make_soup
 
-from scrapper.items import Item, Weapon
+from scrapper.models import Model
+from scrapper.models.item import Weapon
 
 DARK_SWORD = {
     "name": "Dark Sword",
@@ -43,19 +42,19 @@ RUSTY_SWORD = {
 }
 
 
-def test_get_generic_item_info():
+def test_get_item_model():
     soup = make_soup("Dark_Sword.html")
 
-    name = Item.page_name(soup)
+    name = Model.page_name(soup)
     assert name and name == DARK_SWORD["name"]
     assert name == Weapon.page_name(soup)
 
-    descriptions = Item.page_descriptions(soup)
+    descriptions = Model.page_descriptions(soup)
     assert len(descriptions) == len(DARK_SWORD["descriptions"])
     for (current, expected) in zip(descriptions, DARK_SWORD["descriptions"]):
         assert current == expected
 
-    notes = Item.page_notes(soup)
+    notes = Model.page_notes(soup)
     assert len(notes) == len(DARK_SWORD["notes"])
     for (current, expected) in zip(notes, DARK_SWORD["notes"]):
         assert str(current) == str(expected)

@@ -38,7 +38,7 @@ def req_cached(url: str) -> str:
 
         return content
     else:
-        print(f"Cache for {url} already exists at {cache}")
+        # print(f"Cache for {url} already exists at {cache}")
         with open(cache, "r") as f:
             return f.read()
 

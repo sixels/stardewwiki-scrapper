@@ -8,10 +8,9 @@ from bs4 import BeautifulSoup
 
 from scrapper.db import create_db
 
-from scrapper.pages import Weapons
 from scrapper.pages.url import make_wiki_url
-
-from scrapper.items.weapon import Weapon
+from scrapper.pages import Weapons
+from scrapper.models.item import Weapon
 
 from scrapper.utils import req_cached, make_soup
 from scrapper.constants import WIKI_URL, CACHE_DIRECTORY

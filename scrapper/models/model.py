@@ -1,11 +1,11 @@
-from typing import TypedDict, List
+from typing import TypedDict, List, Union
 
 from bs4 import BeautifulSoup
 
 from scrapper.utils import strip_text
 
 
-class ItemInfo(TypedDict):
+class ModelInfo(TypedDict):
     """A generic item information"""
 
     """Item name"""
@@ -16,9 +16,9 @@ class ItemInfo(TypedDict):
     notes: List[str]
 
 
-class Item:
+class Model:
     @staticmethod
-    def page_name(page: BeautifulSoup) -> str or None:
+    def page_name(page: BeautifulSoup) -> Union[str, None]:
         heading = page.find(id="firstHeading")
         return None if heading is None else strip_text(heading)
 

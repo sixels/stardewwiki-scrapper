@@ -3,7 +3,8 @@ from typing import TypedDict, Union
 from bs4 import BeautifulSoup
 
 from scrapper.utils import strip_text, normalized_stats
-from .item import Item, ItemInfo
+from scrapper.models import Model
+from .item import ItemInfo
 
 
 class WeaponInfo(ItemInfo):
@@ -24,7 +25,7 @@ class WeaponInfo(ItemInfo):
     sell_price: int or None
 
 
-class Weapon(Item):
+class Weapon(Model):
     info: WeaponInfo
 
     def __init__(self, info: WeaponInfo):
@@ -34,9 +35,9 @@ class Weapon(Item):
     def from_page(cls, page: BeautifulSoup):
         weapon = WeaponInfo()
 
-        weapon["name"] = Item.page_name(page)
-        weapon["descriptions"] = Item.page_descriptions(page)
-        weapon["notes"] = Item.page_notes(page)
+        weapon["name"] = Model.page_name(page)
+        weapon["descriptions"] = Model.page_descriptions(page)
+        weapon["notes"] = Model.page_notes(page)
 
         info_box = page.find(id="infoboxtable")
         assert info_box is not None, "Could not find any #infoboxtable on page"
