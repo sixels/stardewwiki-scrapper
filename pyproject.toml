@@ -6,7 +6,7 @@ authors = ["Sixels <sixels@protonmail.com>"]
 license = "MIT"
 
 [tool.poetry.scripts]
-app = "src.app:main"
+app = "scrapper.app:main"
 
 [tool.poetry.dependencies]
 python = "^3.9"

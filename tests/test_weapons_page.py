@@ -1,7 +1,6 @@
 import pytest
 
 from scrapper.pages import Weapons
-from scrapper.utils import make_cache_dir
 
 from tests.utils import make_soup
 
@@ -73,6 +72,8 @@ def test_get_weapons():
     reason="This test makes a request to stardewvalleywiki.com, which might slow down the test execution."
 )
 def test_make_req():
+    from scrapper.utils import make_cache_dir
+
     make_cache_dir()
     soup = Weapons.make_soup()
 
