@@ -73,7 +73,7 @@ def parse_key_val(key, val) -> (str, Union[str, int, dict, None]):
 
 
 def int_or_none(s: str) -> int or None:
-    try:
-        return int(s)
-    except ValueError:
-        return None
+    import re
+
+    digits = re.search(r"\d+", s)
+    return int(digits.group()) if digits else None

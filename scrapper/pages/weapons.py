@@ -1,102 +1,54 @@
-""" Parse /Weapons wiki page recusivelly """
+from typing import List
 
-class Weapons:
+from bs4 import BeautifulSoup
+
+from scrapper.utils import strip_text
+from .page import Page
+
+
+class Weapons(Page):
     @staticmethod
-    def wiki_uri():
-        return "Weapons"
-
-    @staticmethod
-    def get_stats(soup: BeautifulSoup) -> dict:
-        weapon_stats_heading = soup.find(id="Weapon_Stats")
-
-        if weapon_stats_heading is None:
-            print("Could not find Weapon Stats")
-            return {}
-
-        table = weapon_stats_heading.find_next("table")
-        columns = list(
-            filter(
-                lambda txt: len(txt) > 1,
-                [strip_text(td) for td in table.find_all("td")],
-            )
-        )
-
-        stats = {}
-        for i in range(0, len(columns), 2):
-            name = columns[i].lower()
-            value = columns[i + 1]
-
-            stats[name] = value
-
-        return stats
+    def page_uri():
+        return "/Weapons"
 
     @staticmethod
-    def get_weapons(soup: BeautifulSoup) -> [Weapon]:
-        weapons = []
+    def get_weapons_uri(soup: BeautifulSoup) -> List[str]:
+        """Get all weapons url from /Weapons"""
 
-        def get_category_weapons(category: str):
-            cat_heading = soup.find(id=category)
+        categories = [
+            "Sword",
+            "Dagger",
+            "Club",
+            "Slingshot",
+            "Unobtainable_Weapons",
+        ]
+        urls = [
+            uri
+            for uris in [
+                get_category_weapons(soup, category) for category in categories
+            ]
+            for uri in uris
+        ]
 
-            if cat_heading is None:
-                print(f"Could not find weapon category '{category}'")
-                return None
+        return urls
 
-            description = None
-            if category != "Unobtainable_Weapons":
-                description = strip_text(cat_heading.find_next("p"))
 
-            table = cat_heading.find_next("tbody")
-            rows = table.find_all("tr")
+def get_category_weapons(soup: BeautifulSoup, category: str) -> List[str]:
+    """Get all weapons from a category"""
+    cat_heading = soup.find(id=category)
 
-            items = []
-            for row in rows:
-                cols = row.find_all("td")[1:]
+    assert cat_heading is not None, f"Could not find weapon category '{category}'"
 
-                if len(cols) == 0:
-                    continue
+    table = [
+        table.find_all("tr")
+        for table in [
+            heading.find_next("tbody") for heading in soup.find(id=category) if heading
+        ]
+    ]
+    urls = [
+        t[1]["href"]
+        for t in [row.find_all("a") for rows in table for row in rows]
+        if len(t) >= 1
+    ]
 
-                fields_lst = [
-                    "name",
-                    "type",
-                    "level",
-                    "description",
-                    "damage",
-                    "critical strike chance",
-                    "stats",
-                    "location",
-                    "purchase price",
-                    "sell price",
-                ]
-                # ordered set hack
-                fields = dict.fromkeys(fields_lst)
-
-                # slingshots have neither level nor stats information
-                if category == "Slingshot":
-                    fields.pop("level")
-                    fields.pop("stats")
-                if category != "Unobtainable_Weapons":
-                    fields.pop("type")
-                else:
-                    fields.pop("location")
-                    fields.pop("purchase price")
-
-                item = {}
-                for (i, field) in enumerate(fields.keys()):
-                    if field == "stats":
-                        item[field] = normalized_stats(cols[i])
-                    else:
-                        if field == "name":
-                            item["reference"] = cols[i].find_next("a").get("href")
-
-                        item[field] = strip_text(cols[i])
-
-                items.append(item)
-
-            return {"description": description, "items": items}
-
-        categories = ["Sword", "Dagger", "Club", "Slingshot", "Unobtainable_Weapons"]
-
-        for category in categories:
-            weapons.append(get_category_weapons(category))
-
-        return weapons
+    return urls

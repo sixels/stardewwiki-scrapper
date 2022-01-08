@@ -6,39 +6,29 @@ from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 
-from scrapper.pages.weapons import Weapons
-from scrapper.pages.items import Items
+from scrapper.db import create_db
+from scrapper.pages import Weapons
+from scrapper.utils import req_cached
+from scrapper.constants import WIKI_URL,CACHE_DIRECTORY
 
-CACHE_DIRECTORY = path.join(
-    environ.get("XDG_CACHE_HOME", "%s/.cache/" % environ.get("HOME")),
-    "stardewcs/")
+def main():
+    makedirs(CACHE_DIRECTORY, exist_ok=True)
 
-WIKI_URL = "https://stardewvalleywiki.com/"
+    with sqlite3.connect("stardew.db") as conn:
+        cursor = create_db(conn)
 
+        req_cached(Weapons.page_uri(), location)
+        Weapons.get_weapons()
 
-def cache_request(url, location):
-    if not path.isfile(location):
-        res = requests.get(url)
-        print(f"GET ${res.status_code} {url}")
-        content = res.text
-
-        with open(location, "w") as f:
-            f.write(content)
-
-        return content
-    else:
-        print(f"Cache for {url} already exists at {location}")
-        with open(location, "r") as f:
-            return f.read()
+        conn.commit()
 
 
 def save_page(db, page):
-    url = urljoin(WIKI_URL, page)
-    res = cache_request(url, path.join(CACHE_DIRECTORY, f"{page}.html"))
-
+    wiki_url = urljoin(WIKI_URL, page)
+    res = req_cached(wiki_url, path.join(CACHE_DIRECTORY, f"{page}.html"))
     soup = BeautifulSoup(res, "html.parser")
 
-    weapons = Weapons.get_weapons(soup)
+    weapons = Weapons.get_weapons()
 
     for name, category in weapons.items():
         w: dict = dict()
@@ -46,15 +36,19 @@ def save_page(db, page):
             ref = w.pop("reference")
             if ref:
                 url = urljoin(WIKI_URL, ref[1:])
-                res = cache_request(
-                    url, path.join(CACHE_DIRECTORY, f"{ref[1:]}.html"))
+                res = req_cached(wiki_url, path.join(CACHE_DIRECTORY, "%s.html" % ref[1:]))
                 soup = BeautifulSoup(res, "html.parser")
                 i = Items.item_info(soup)
                 cols = ",".join(i.keys()).replace(" ", "_")
                 db.execute(
                     "INSERT INTO ITEMS (name,description,notes,aditional) VALUES (?,?,?,?)",
-                    (i["name"], i.get("description"), i.get("notes"),
-                     json.dumps(i["aditional"], separators=(",", ":"))))
+                    (
+                        i["name"],
+                        i.get("description"),
+                        i.get("notes"),
+                        json.dumps(i["aditional"], separators=(",", ":")),
+                    ),
+                )
 
             if w.get("type") is None:
                 w["type"] = name
@@ -77,19 +71,14 @@ def save_page(db, page):
                     except ValueError:
                         w["sell price"] = None
 
-            cols = ",".join(w.keys()).replace("critical strike chance",
-                                              "critical_chance").replace(
-                                                  " ", "_")
+            cols = (
+                ",".join(w.keys())
+                .replace("critical strike chance", "critical_chance")
+                .replace(" ", "_")
+            )
             values = tuple(w.values())
 
             db.execute(
                 f"INSERT INTO weapons ({cols}) VALUES ({', '.join('?'* len(values))});",
-                values)
-
-
-def main():
-    makedirs(CACHE_DIRECTORY, exist_ok=True)
-
-    with sqlite3.connect('stardew.db') as conn:
-        create_db(conn)
-        conn.commit()
+                values,
+            )
