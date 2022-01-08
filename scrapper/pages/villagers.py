@@ -12,7 +12,7 @@ class Villagers(Page):
         return "/Villagers"
 
     @staticmethod
-    def get_villagers_uri(soup: BeautifulSoup) -> List[str]:
+    def get_pages(soup: BeautifulSoup) -> List[str]:
         """Get all Villagers url from /Villagers"""
 
         categories = [

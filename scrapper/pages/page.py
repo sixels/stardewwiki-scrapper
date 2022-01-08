@@ -11,7 +11,7 @@ class Page:
         raise NotImplementedError()
 
     @classmethod
-    def make_soup(cls) -> BeautifulSoup:
+    def request_wiki(cls) -> BeautifulSoup:
         """Request and return a parsed wiki page"""
         res = req_cached(make_wiki_url(cls.page_uri()))
         return BeautifulSoup(res, "html.parser")

@@ -63,7 +63,7 @@ URIS = [
 def test_get_weapons():
     soup = make_soup("Weapons.html")
 
-    uris = Weapons.get_weapons_uri(soup)
+    uris = Weapons.get_pages(soup)
     for uri in URIS:
         assert uri in uris
 
@@ -75,7 +75,7 @@ def test_make_req():
     from scrapper.utils import make_cache_dir
 
     make_cache_dir()
-    soup = Weapons.make_soup()
+    soup = Weapons.request_wiki()
 
-    uris = Weapons.get_weapons_uri(soup)
+    uris = Weapons.get_pages(soup)
     assert len(uris) > 0

@@ -3,11 +3,10 @@ from typing import TypedDict, Union
 from bs4 import BeautifulSoup
 
 from scrapper.utils import strip_text, normalized_stats
-from scrapper.models import Model
-from .item import ItemInfo
+from scrapper.models import Model, ModelInfo
 
 
-class WeaponInfo(ItemInfo):
+class WeaponInfo(ModelInfo):
     """A Weapon information"""
 
     """In-game description text"""

@@ -10,7 +10,7 @@ HALEY = {
     "descriptions": [
         "Haley is a villager who lives in Pelican Town. She's one of the twelve characters available to marry."
     ],
-    "notes": []
+    "notes": [],
 }
 
 
@@ -18,13 +18,21 @@ def test_get_villager_model():
     soup = make_soup("Haley.html")
 
     name = Model.page_name(soup)
-    assert name and name == HALEY.name
+    assert name == HALEY["name"]
 
     descriptions = Model.page_descriptions(soup)
-    assert descriptions == HALEY.descriptions
+    assert descriptions == HALEY["descriptions"]
 
     notes = Model.page_notes(soup)
-    assert notes == HALEY.notes
+    assert notes == HALEY["notes"]
+
 
 def test_get_haley_info():
-    pass
+    soup = make_soup("Haley.html")
+
+    haley = Villager.from_page(soup)
+
+def test_get_leo_info():
+    soup = make_soup("Leo.html")
+
+    leo = Villager.from_page(soup)

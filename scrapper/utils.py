@@ -1,5 +1,6 @@
 from os import path, makedirs
 from urllib.parse import urlparse
+from typing import List
 
 from bs4 import BeautifulSoup
 import requests
@@ -9,7 +10,7 @@ from scrapper.constants import WIKI_URL, CACHE_DIRECTORY
 
 def strip_text(elm) -> str:
     """Removes trailing spaces from element's text"""
-    return elm.text.strip("\n ")
+    return elm.text.strip("\n \xa0") if elm else ""
 
 
 def normalized_stats(stats) -> dict:
@@ -18,6 +19,18 @@ def normalized_stats(stats) -> dict:
 
     pat = re.compile(r"([A-Za-z .]+)(\xa0| )\(([+-]*\d+%?)\)")
     return dict((stat[0].strip().lower(), stat[2]) for stat in pat.findall(stats))
+
+
+def normalized_list(string: str) -> List[str]:
+    """Get a list from the given string"""
+    import re
+
+    pat = re.compile(r"([A-Za-z \.]+)(\xa0| )\(([+-]?\w*%?)\)")
+    lst = [
+        groups[0].strip().capitalize() + " (" + groups[2] + ")"
+        for groups in pat.findall(string)
+    ]
+    return lst if len(lst) else [string]
 
 
 def make_soup(page: str) -> BeautifulSoup:

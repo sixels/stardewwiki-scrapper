@@ -12,7 +12,7 @@ class Weapons(Page):
         return "/Weapons"
 
     @staticmethod
-    def get_weapons_uri(soup: BeautifulSoup) -> List[str]:
+    def get_pages(soup: BeautifulSoup) -> List[str]:
         """Get all weapons url from /Weapons"""
 
         categories = [

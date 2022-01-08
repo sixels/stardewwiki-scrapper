@@ -9,8 +9,9 @@ from bs4 import BeautifulSoup
 from scrapper.db import create_db
 
 from scrapper.pages.url import make_wiki_url
-from scrapper.pages import Weapons
+from scrapper.pages import Weapons, Villagers
 from scrapper.models.item import Weapon
+from scrapper.models.villager import Villager
 
 from scrapper.utils import req_cached, make_soup
 from scrapper.constants import WIKI_URL, CACHE_DIRECTORY
@@ -22,10 +23,13 @@ def main():
     with sqlite3.connect("stardew.db") as conn:
         cursor = create_db(conn)
 
-        for uri in Weapons.get_weapons_uri(Weapons.make_soup()):
+        for uri in Weapons.get_pages(Weapons.request_wiki()):
             weapon_soup = make_soup(req_cached(make_wiki_url(uri)))
             weapon = Weapon.from_page(weapon_soup)
-            print(weapon.info["name"])
+
+        for uri in Villagers.get_pages(Villagers.request_wiki()):
+            villager_soup = make_soup(req_cached(make_wiki_url(uri)))
+            villager = Villager.from_page(villager_soup)
 
         conn.commit()
 
