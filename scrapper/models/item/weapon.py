@@ -31,7 +31,7 @@ class Weapon(Model):
         self.info = info
 
     @classmethod
-    def from_page(cls, page: BeautifulSoup):
+    def parse(cls, page: BeautifulSoup):
         weapon = WeaponInfo()
 
         weapon["name"] = Model.page_name(page)

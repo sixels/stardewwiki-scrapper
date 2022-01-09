@@ -25,11 +25,11 @@ def main():
 
         for uri in Weapons.get_pages(Weapons.request_wiki()):
             weapon_soup = make_soup(req_cached(make_wiki_url(uri)))
-            weapon = Weapon.from_page(weapon_soup)
+            weapon = Weapon.parse(weapon_soup)
 
         for uri in Villagers.get_pages(Villagers.request_wiki()):
             villager_soup = make_soup(req_cached(make_wiki_url(uri)))
-            villager = Villager.from_page(villager_soup)
+            villager = Villager.parse(villager_soup)
 
         conn.commit()
 

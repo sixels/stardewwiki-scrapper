@@ -62,7 +62,7 @@ def test_get_item_model():
 
 def test_get_darksword_info():
     soup = make_soup("Dark_Sword.html")
-    weapon = Weapon.from_page(soup)
+    weapon = Weapon.parse(soup)
 
     assert len(weapon.info) == len(DARK_SWORD)
     for key in weapon.info.keys():
@@ -71,7 +71,7 @@ def test_get_darksword_info():
 
 def test_get_rustysword_info():
     soup = make_soup("Rusty_Sword.html")
-    weapon = Weapon.from_page(soup)
+    weapon = Weapon.parse(soup)
 
     assert len(weapon.info) == len(RUSTY_SWORD)
     for key in weapon.info.keys():

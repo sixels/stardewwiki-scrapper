@@ -80,7 +80,7 @@ def test_get_villager_model():
 def test_get_haley_info():
     soup = make_soup("Haley.html")
 
-    haley = Villager.from_page(soup)
+    haley = Villager.parse(soup)
 
     assert haley.info["schedules"].brief == HALEY["schedules"]["brief"]
     # print(haley.info["schedules"].schedule[0])
@@ -98,4 +98,4 @@ def test_get_haley_info():
 def test_get_leo_info():
     soup = make_soup("Leo.html")
 
-    leo = Villager.from_page(soup)
+    leo = Villager.parse(soup)

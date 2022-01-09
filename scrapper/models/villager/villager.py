@@ -132,7 +132,7 @@ class Villager(Model):
         self.info = info
 
     @classmethod
-    def from_page(cls, page: BeautifulSoup):
+    def parse(cls, page: BeautifulSoup):
         villager = VillagerInfo()
 
         villager["name"] = Model.page_name(page)

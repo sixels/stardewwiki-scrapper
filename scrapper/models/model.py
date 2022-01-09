@@ -55,6 +55,6 @@ class Model:
         return notes
 
     @classmethod
-    def from_page(cls, page: BeautifulSoup):
+    def parse(cls, page: BeautifulSoup):
         """Create an item from the wiki page and return it"""
         raise NotImplementedError()
