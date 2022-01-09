@@ -11,6 +11,56 @@ HALEY = {
         "Haley is a villager who lives in Pelican Town. She's one of the twelve characters available to marry."
     ],
     "notes": [],
+    "schedules": {
+        "brief": [
+            "Her behavior changes if it's raining or snowing outside. She will not go to the fountain Tuesday-Sunday if it is raining.",
+            "Her house is usually unlocked from 9am to 8pm. If she is inside when it is locked and you are not, she will be inaccessible to you.",
+        ],
+        "schedule": [
+            (
+                "Spring",
+                [
+                    (
+                        "Monday",
+                        [
+                            {
+                                "location": "In her room",
+                                "time": "9:00 AM",
+                            },
+                            {
+                                "location": "Leaves her room to go to kitchen",
+                                "time": "10:00 AM",
+                            },
+                            {
+                                "location": "Leaving home to go to the river south of Marnie's Ranch",
+                                "time": "11:00 AM",
+                            },
+                            {
+                                "location": "By the river south of Marnie's Ranch, taking pictures",
+                                "time": "12:20 PM",
+                            },
+                            {
+                                "location": "Heads home",
+                                "time": "4:30 PM",
+                            },
+                            {
+                                "location": "At home, cooking dinner",
+                                "time": "5:50 PM",
+                            },
+                            {
+                                "time": "8:20 PM",
+                                "location": "In her room",
+                            },
+                            {
+                                "time": "11:00 PM",
+                                "location": "Goes to bed",
+                            },
+                        ],
+                    ),
+                ],
+            )
+        ],
+    },
 }
 
 
@@ -31,6 +81,19 @@ def test_get_haley_info():
     soup = make_soup("Haley.html")
 
     haley = Villager.from_page(soup)
+
+    assert haley.info["schedules"].brief == HALEY["schedules"]["brief"]
+    # print(haley.info["schedules"].schedule[0])
+    assert (
+        haley.info["schedules"].schedule[0][0] == HALEY["schedules"]["schedule"][0][0]
+    )
+    for (c, e) in zip(
+        haley.info["schedules"].schedule[0][1], HALEY["schedules"]["schedule"][0][1]
+    ):
+        assert c[0] == e[0]
+        for (sc, se) in zip(c[1], e[1]):
+            assert sc["time"] == se["time"] and sc["location"] == se["location"]
+
 
 def test_get_leo_info():
     soup = make_soup("Leo.html")
