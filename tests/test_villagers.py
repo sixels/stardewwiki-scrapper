@@ -11,6 +11,12 @@ HALEY = {
         "Haley is a villager who lives in Pelican Town. She's one of the twelve characters available to marry."
     ],
     "notes": [],
+    "birthday": "Spring 14",
+    "lives_in": "Pelican Town",
+    "address": ["2 Willow Lane"],
+    "family": ["Emily (Sister)"],
+    "friends": ["Alex"],
+    "marriage": True,
     "schedules": {
         "brief": [
             "Her behavior changes if it's raining or snowing outside. She will not go to the fountain Tuesday-Sunday if it is raining.",
@@ -61,6 +67,51 @@ HALEY = {
             )
         ],
     },
+    "gifts": {
+        "gift": [
+            {
+                "love": (
+                    ["Oh my god, this is my favorite thing!"],
+                    [
+                        ["All Universal Loves (except Prismatic Shard)"],
+                        {
+                            "name": "Coconut",
+                            "description": "A seed of the coconut palm. It has many culinary uses.",
+                            "source": ["Foraging"],
+                            "ingredients": None,
+                        },
+                        {
+                            "name": "Fruit Salad",
+                            "description": "A delicious combination of summer fruits.",
+                            "source": ["Cooking"],
+                            "ingredients": [
+                                "Blueberry (1)",
+                                "Melon (1)",
+                                "Apricot (1)",
+                            ],
+                        },
+                        {
+                            "name": "Pink Cake",
+                            "description": "There's little heart candies on top.",
+                            "source": ["Cooking"],
+                            "ingredients": [
+                                "Melon (1)",
+                                "Wheat Flour (1)",
+                                "Sugar (1)",
+                                "Egg (1)",
+                            ],
+                        },
+                        {
+                            "name": "Sunflower",
+                            "description": "A common misconception is that the flower turns so it's always facing the sun.",
+                            "source": ["Farming"],
+                            "ingredients": None,
+                        },
+                    ],
+                )
+            }
+        ]
+    },
 }
 
 
@@ -82,6 +133,13 @@ def test_get_haley_info():
 
     haley = Villager.parse(soup)
 
+    assert haley.info["birthday"] == HALEY["birthday"]
+    assert haley.info["address"] == HALEY["address"]
+    assert haley.info["lives_in"] == HALEY["lives_in"]
+    assert haley.info["family"] == HALEY["family"]
+    assert haley.info["friends"] == HALEY["friends"]
+    assert haley.info["marriage"] == HALEY["marriage"]
+
     assert haley.info["schedules"].brief == HALEY["schedules"]["brief"]
     # print(haley.info["schedules"].schedule[0])
     assert (
@@ -93,6 +151,17 @@ def test_get_haley_info():
         assert c[0] == e[0]
         for (sc, se) in zip(c[1], e[1]):
             assert sc["time"] == se["time"] and sc["location"] == se["location"]
+
+    current_gift = haley.info["gifts"].gift[0]
+    expected_gift = HALEY["gifts"]["gift"][0]
+
+    # quotes
+    for (c, e) in zip(current_gift["love"][0], expected_gift["love"][0]):
+        assert c == e
+    # gifts
+    for (c, e) in zip(current_gift["love"][1], expected_gift["love"][1]):
+        for (cc, ee) in zip(c, e):
+            assert cc == ee
 
 
 def test_get_leo_info():
