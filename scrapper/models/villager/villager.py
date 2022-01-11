@@ -99,25 +99,25 @@ class VillagerSchedules(Model):
 
 
 class VillagerGifts(Model):
+    Gift = Union[
+        TypedDict(
+            "NormalGift",
+            {
+                "name": str,
+                "description": str,
+                "source": Union[List[str], None],
+                "ingredients": Union[List[str], None],
+            },
+        ),
+        List[str],
+    ]
+
     gift: List[
         Dict[
             str,
             Tuple[
                 List[str],
-                List[
-                    Union[
-                        TypedDict(
-                            "NormalGift",
-                            {
-                                "name": str,
-                                "description": str,
-                                "source": Union[List[str], None],
-                                "ingredients": Union[List[str], None],
-                            },
-                        ),
-                        List[str],
-                    ]
-                ],
+                List[Gift],
             ],
         ]
     ]  # [{love|like|neutral|dislike|hate: ([quotes], [gifts])}]
@@ -191,6 +191,8 @@ class VillagerInfo(ModelInfo):
 
     schedules: Union[VillagerSchedules, None]
     gifts: Union[VillagerGifts, None]
+
+    # TODO: Parse Quests and Shop sections
 
 
 class Villager(Model):
