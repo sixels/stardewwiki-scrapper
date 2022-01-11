@@ -1,4 +1,4 @@
-from typing import TypedDict, List, Tuple, Union, Dict
+from typing import List, Union
 
 from bs4 import BeautifulSoup
 

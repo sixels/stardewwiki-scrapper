@@ -1,3 +1,11 @@
+from typing import TypedDict, Union, List, Tuple, Dict
+
+from bs4 import BeautifulSoup
+
+from scrapper.models import Model
+from scrapper.utils import strip_text
+
+
 class Schedule(TypedDict):
     time: str
     location: str

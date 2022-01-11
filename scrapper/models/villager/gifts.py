@@ -2,6 +2,10 @@ from typing import Union, List, Tuple, Dict, TypedDict
 
 from bs4 import BeautifulSoup
 
+from scrapper.models import Model
+from scrapper.utils import strip_text, normalized_list
+
+
 class VillagerGifts(Model):
     Gift = Union[
         TypedDict(
