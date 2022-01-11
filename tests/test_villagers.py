@@ -168,3 +168,4 @@ def test_get_leo_info():
     soup = make_soup("Leo.html")
 
     leo = Villager.parse(soup)
+    assert leo is not None

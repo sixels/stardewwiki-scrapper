@@ -12,6 +12,11 @@ class Weapons(Page):
         return "/Weapons"
 
     @staticmethod
+    def model():
+        from scrapper.models.item import Weapon
+        return Weapon
+
+    @staticmethod
     def get_pages(soup: BeautifulSoup) -> List[str]:
         """Get all weapons url from /Weapons"""
 

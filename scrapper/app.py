@@ -23,13 +23,8 @@ def main():
     with sqlite3.connect("stardew.db") as conn:
         cursor = create_db(conn)
 
-        for uri in Weapons.get_pages(Weapons.request_wiki()):
-            weapon_soup = make_soup(req_cached(make_wiki_url(uri)))
-            weapon = Weapon.parse(weapon_soup)
-
-        for uri in Villagers.get_pages(Villagers.request_wiki()):
-            villager_soup = make_soup(req_cached(make_wiki_url(uri)))
-            villager = Villager.parse(villager_soup)
+        villagers = Villagers.get_models()
+        weapons = Weapons.get_models()
 
         conn.commit()
 

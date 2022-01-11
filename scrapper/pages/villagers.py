@@ -7,9 +7,15 @@ from .page import Page
 
 
 class Villagers(Page):
+
     @staticmethod
     def page_uri():
         return "/Villagers"
+
+    @staticmethod
+    def model():
+        from scrapper.models.villager import Villager
+        return Villager
 
     @staticmethod
     def get_pages(soup: BeautifulSoup) -> List[str]:
@@ -49,7 +55,5 @@ def get_category_villagers(soup: BeautifulSoup, category: str) -> List[str]:
         for t in [row.find_all("a") for rows in gallery for row in rows]
         if len(t) >= 1
     ]
-
-    print (urls)
 
     return urls
