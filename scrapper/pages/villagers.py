@@ -42,7 +42,7 @@ def get_category_villagers(soup: BeautifulSoup, category: str) -> List[str]:
     """Get all villagers from a category"""
     cat_heading = soup.find(id=category)
 
-    assert cat_heading is not None, f"Could not find villager category '{category}'"
+    assert cat_heading is not None, f"Could not find villager category: '{category}'"
 
     gallery = [
         gallery.find_all("li")

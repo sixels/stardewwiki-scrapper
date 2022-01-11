@@ -42,7 +42,7 @@ def get_category_weapons(soup: BeautifulSoup, category: str) -> List[str]:
     """Get all weapons from a category"""
     cat_heading = soup.find(id=category)
 
-    assert cat_heading is not None, f"Could not find weapon category '{category}'"
+    assert cat_heading is not None, f"Could not find weapon category: '{category}'"
 
     table = [
         table.find_all("tr")
